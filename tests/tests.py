@@ -1,4 +1,5 @@
 from secure_3_party_comms.protocol import *
+from random import randint, randrange, choices
 import numpy as np
 import pandas as pd
 
@@ -43,18 +44,18 @@ def run_test_case(sending_clients=None, prob_distribution=None, messages_per_cli
         probabilities = [1 / len(active_clients)] * len(active_clients)  # Equal probability
 
     while any(remaining_messages[c] > 0 for c in active_clients):
-      # Ensure weights match the updated client list
-      probabilities = [prob_distribution[c] for c in active_clients] if prob_distribution else [1 / len(active_clients)] * len(active_clients)
+        # Ensure weights match the updated client list
+        probabilities = [prob_distribution[c] for c in active_clients] if prob_distribution else [1 / len(active_clients)] * len(active_clients)
 
-      sender_name = choices(active_clients, probabilities)[0]
-      sender = clients[sender_name]
+        sender_name = choices(active_clients, probabilities)[0]
+        sender = clients[sender_name]
 
-      try:
-          sender.send_message()
-          QH.deliver()
-          remaining_messages[sender_name] -= 1
-      except AssertionError:
-          active_clients.remove(sender_name)  # Remove sender if they can't send
+        try:
+            sender.send_message()
+            QH.deliver()
+            remaining_messages[sender_name] -= 1
+        except AssertionError:
+            active_clients.remove(sender_name)  # Remove sender if they can't send
 
     # Collect statistics
     stats_A = client_A.statistics()
@@ -187,216 +188,213 @@ pp.pprint(averages)
 
 
 def main():
-  # test_case_1A()
-  # init_globals(n=120, d=20, debug=False)
-  # test_case_1B()
-  # init_globals(n=120, d=20, debug=False)
-  # test_case_1C()
-  # test_case_1C()
-  print(run_test_case(sending_clients=['A', 'B', 'C'], prob_distribution={'A': 0.9, 'B': 0.05, 'C': 0.05})) #COLLISION CASE
-  # test_case_4()
-  # test_case_5(messages_A=27, messages_B=26, messages_C=27)
+    # test_case_1A()
+    # init_globals(n=120, d=20, debug=False)
+    # test_case_1B()
+    # init_globals(n=120, d=20, debug=False)
+    # test_case_1C()
+    # test_case_1C()
+    print(run_test_case(sending_clients=['A', 'B', 'C'], prob_distribution={'A': 0.9, 'B': 0.05, 'C': 0.05})) #COLLISION CASE
+# test_case_4()
+# test_case_5(messages_A=27, messages_B=26, messages_C=27)
 
 
 if __name__ == '__main__':
-  main()
+    main()
 
 def test_case_1A():
-  '''
-  Only A client sends
-  '''
-  init_globals()
-  pads = init_pads(N,3)
-  client_A = client('A', pads)
-  client_B = client('B', pads)
-  client_C = client('C', pads)
+    '''
+    Only A client sends
+    '''
+    init_globals()
+    pads = init_pads(N,3)
+    client_A = client('A', pads)
+    client_B = client('B', pads)
+    client_C = client('C', pads)
 
-  QH = queue_handler([client_A, client_B, client_C])
+    QH = queue_handler([client_A, client_B, client_C])
 
-  for x in range(120):
-    try:
-      client_A.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      # print('Pads exhausted',e,x)
-      break
+    for x in range(120):
+        try:
+            client_A.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            # print('Pads exhausted',e,x)
+            break
 
 
-    # if x%4 == randint(0,4):
-    #   QH.deliver_undelivered()
-  a = client_A.statistics()
-  b = client_B.statistics()
-  c = client_C.statistics()
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
-  print('Wastage:', N-sum([a[0],b[0],c[0]]))
+        # if x%4 == randint(0,4):
+        #   QH.deliver_undelivered()
+    a = client_A.statistics()
+    b = client_B.statistics()
+    c = client_C.statistics()
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    print('Wastage:', N-sum([a[0],b[0],c[0]]))
 
-  # client_A.print_history()
-  # client_B.print_history()
-  # client_C.print_history()
-  return COLLISIONS
+# client_A.print_history()
+# client_B.print_history()
+# client_C.print_history()
+    return COLLISIONS
 
 
 def test_case_1B():
-  '''
-  Only B client sends
-  '''
-  init_globals()
-  pads = init_pads(N,3)
-  client_A = client('A', pads)
-  client_B = client('B', pads)
-  client_C = client('C', pads)
+    '''
+      Only B client sends
+      '''
+    init_globals()
+    pads = init_pads(N,3)
+    client_A = client('A', pads)
+    client_B = client('B', pads)
+    client_C = client('C', pads)
 
-  QH = queue_handler([client_A, client_B, client_C])
+    QH = queue_handler([client_A, client_B, client_C])
 
-  for x in range(120):
-    try:
-      client_B.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      # print('Pads exhausted',e,x)
-      break
+    for x in range(120):
+        try:
+            client_B.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            # print('Pads exhausted',e,x)
+            break
 
 
-    # if x%4 == randint(0,4):
-    #   QH.deliver_undelivered()
-  a = client_A.statistics()
-  b = client_B.statistics()
-  c = client_C.statistics()
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
-  print('Wastage:', N-sum([a[0],b[0],c[0]]))
+        # if x%4 == randint(0,4):
+        #   QH.deliver_undelivered()
+    a = client_A.statistics()
+    b = client_B.statistics()
+    c = client_C.statistics()
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    print('Wastage:', N-sum([a[0],b[0],c[0]]))
 
-  # client_A.print_history()
-  # client_B.print_history()
-  # client_C.print_history()
-  return COLLISIONS
+# client_A.print_history()
+# client_B.print_history()
+# client_C.print_history()
+    return COLLISIONS
 
 
 def test_case_1C():
-  '''
-  Only C client sends
-  '''
-  init_globals()
-  pads = init_pads(N,3)
-  client_A = client('A', pads)
-  client_B = client('B', pads)
-  client_C = client('C', pads)
+    '''
+      Only C client sends
+      '''
+    init_globals()
+    pads = init_pads(N,3)
+    client_A = client('A', pads)
+    client_B = client('B', pads)
+    client_C = client('C', pads)
 
-  QH = queue_handler([client_A, client_B, client_C])
+    QH = queue_handler([client_A, client_B, client_C])
 
-  for x in range(120):
-    try:
-      client_C.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      # print('Pads exhausted',e,x)
-      break
-
-
-    # if x%4 == randint(0,4):
-    #   QH.deliver_undelivered()
-  a = client_A.statistics()
-  b = client_B.statistics()
-  c = client_C.statistics()
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
-  print('Wastage:', N-sum([a[0],b[0],c[0]]))
-  return COLLISIONS
-
-  # client_A.print_history()
-  # client_B.print_history()
-  # client_C.print_history()
+    for x in range(120):
+        try:
+            client_C.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            # print('Pads exhausted',e,x)
+            break
 
 
+        # if x%4 == randint(0,4):
+        #   QH.deliver_undelivered()
+    a = client_A.statistics()
+    b = client_B.statistics()
+    c = client_C.statistics()
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    print('Wastage:', N-sum([a[0],b[0],c[0]]))
+    return COLLISIONS
 
+# client_A.print_history()
+# client_B.print_history()
+# client_C.print_history()
 
 def test_case_2():
-  '''
-  All clients send equally and sequentially
-  '''
-  init_globals()
-  pads = init_pads(N,3)
-  client_A = client('A', pads)
-  client_B = client('B', pads)
-  client_C = client('C', pads)
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    '''
+    All clients send equally and sequentially
+    '''
+    init_globals()
+    pads = init_pads(N,3)
+    client_A = client('A', pads)
+    client_B = client('B', pads)
+    client_C = client('C', pads)
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
 
-  QH = queue_handler([client_A, client_B, client_C])
-  can_send = [True, True, True]
+    QH = queue_handler([client_A, client_B, client_C])
+    can_send = [True, True, True]
 
-  for x in range(N):
-    try:
-      client_A.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      can_send[0] = False
-    try:
-      client_B.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      can_send[1] = False
-    try:
-      client_C.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      can_send[2] = False
-    if not any(can_send):
-      break
+    for x in range(N):
+        try:
+            client_A.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            can_send[0] = False
+        try:
+            client_B.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            can_send[1] = False
+        try:
+            client_C.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            can_send[2] = False
+        if not any(can_send):
+            break
 
-    # if x%4 == randint(0,4):
-    #   QH.deliver_undelivered()
-  a = client_A.statistics()
-  b = client_B.statistics()
-  c = client_C.statistics()
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
-  print('Wastage:', N-sum([a[0],b[0],c[0]]))
+        # if x%4 == randint(0,4):
+        #   QH.deliver_undelivered()
+    a = client_A.statistics()
+    b = client_B.statistics()
+    c = client_C.statistics()
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    print('Wastage:', N-sum([a[0],b[0],c[0]]))
 
-  return COLLISIONS
+    return COLLISIONS
 
-  # client_A.print_history()
-  # client_B.print_history()
-  # client_C.print_history()
+# client_A.print_history()
+# client_B.print_history()
+# client_C.print_history()
 
 def test_case_3():
-  '''
-  All clients send equally but in randm order
-  '''
-  init_globals()
-  pads = init_pads(N,3)
-  client_A = client('A', pads)
-  client_B = client('B', pads)
-  client_C = client('C', pads)
+    '''
+    All clients send equally but in randm order
+    '''
+    init_globals()
+    pads = init_pads(N,3)
+    client_A = client('A', pads)
+    client_B = client('B', pads)
+    client_C = client('C', pads)
 
-  clients = [client_A, client_B, client_C]
+    clients = [client_A, client_B, client_C]
 
-  QH = queue_handler(clients)
+    QH = queue_handler(clients)
 
-  can_send = [True, True, True]
-  for x in range(N):
-    i = randrange(0,3)
-    sender = clients[i]
-    try:
-      sender.send_message()
-      QH.deliver()
-    except AssertionError as e:
-      can_send[i] = False
-      pass
+    can_send = [True, True, True]
+    for x in range(N):
+        i = randrange(0,3)
+        sender = clients[i]
+        try:
+            sender.send_message()
+            QH.deliver()
+        except AssertionError as e:
+            can_send[i] = False
+        pass
 
-    if not any(can_send):
-      break
+        if not any(can_send):
+            break
 
 
 
-    # if x%4 == randint(0,4):
-    #   QH.deliver_undelivered()
-  a = client_A.statistics()
-  b = client_B.statistics()
-  c = client_C.statistics()
-  print('Collisions:',sum(COLLISIONS), COLLISIONS)
-  print('Wastage:', N-sum([a[0],b[0],c[0]]))
-  return COLLISIONS
+        # if x%4 == randint(0,4):
+        #   QH.deliver_undelivered()
+    a = client_A.statistics()
+    b = client_B.statistics()
+    c = client_C.statistics()
+    print('Collisions:',sum(COLLISIONS), COLLISIONS)
+    print('Wastage:', N-sum([a[0],b[0],c[0]]))
+    return COLLISIONS
 
-  # client_A.print_history()
-  # client_B.print_history()
-  # client_C.print_history()
+# client_A.print_history()
+# client_B.print_history()
+# client_C.print_history()
 
 test_case_2()
 
@@ -446,6 +444,7 @@ def test_case_4(prob_A=0.33, prob_B=0.33, prob_C=0.34):
     print('Collisions:', sum(COLLISIONS), COLLISIONS)
     print('Wastage:', N-sum([a[0],b[0],c[0]]))
     return COLLISIONS
+
 def test_case_5(messages_A=None, messages_B=None, messages_C=None):
     '''
     Clients send a fixed number of messages.
@@ -490,6 +489,3 @@ def test_case_5(messages_A=None, messages_B=None, messages_C=None):
     print('Collisions:', sum(COLLISIONS), COLLISIONS)
     print('Wastage:', N-sum([a[0],b[0],c[0]]))
     return COLLISIONS
-
-
-

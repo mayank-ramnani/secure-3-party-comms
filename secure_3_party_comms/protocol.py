@@ -1,9 +1,6 @@
 from random import randint, randrange, choices
-from tqdm import tqdm
 import os, contextlib
 import random
-import numpy as np
-import pandas as pd
 
 #GLOBALS
 DEBUG = True

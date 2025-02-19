@@ -1,19 +1,21 @@
 import os, contextlib
 from random import randint
 
-#GLOBALS
-DEBUG = False
+# GLOBALS
+N = 12         #Available pads [user input]
+D = 2          #Max undelivered messages at any point [user input]
+UNDELIVERED_PROBABILITY_RANGE = (5,25) #x to y% chance of a message being undelivered
+
+# PROTOCOL SPECIFIC
+M = 3           # Total clients in the network, cannot change
 UNDELIVERED_QUEUE = [] #Queuefor undelivered messages for simulation
 MESSAGE_QUEUE = []
 PADS = []       #PADS[i] is for the ith client, each client will have the ith mutable copy
 ROOT_PADS = []  #Each client will have a constant fixed ROOT_PADS copy
-UNDELIVERED_PROBABILITY_RANGE = (5,25) #x to y% chance of a message being undelivered
 UNDELIVERED_COUNT = 0
 COLLISIONS = [0,0,0]
 
-M = 3           #Total clients in the network
-N = 12         #Available pads [user input]
-D = 2          #Max undelivered messages at any point [user input]
+DEBUG = False
 
 def init_globals():
     global DEBUG, UNDELIVERED_QUEUE, MESSAGE_QUEUE, PADS, ROOT_PADS, UNDELIVERED_COUNT, M, N, D, COLLISIONS

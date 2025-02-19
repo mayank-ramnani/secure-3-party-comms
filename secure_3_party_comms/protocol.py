@@ -2,7 +2,7 @@ import os, contextlib
 from random import randint
 
 #GLOBALS
-DEBUG = True
+DEBUG = False
 UNDELIVERED_QUEUE = [] #Queuefor undelivered messages for simulation
 MESSAGE_QUEUE = []
 PADS = []       #PADS[i] is for the ith client, each client will have the ith mutable copy
@@ -35,18 +35,11 @@ def init_globals():
 def init_pads(n,m):
     pads = []
     for x in range(n):
-        # pads.append(x)
-        # continue
         pad = -1
         while pad == -1 or pad in pads:
             pad = randint(2**16,2**32-2)
         pads.append(pad)
     return pads
-
-def suppress_all_output(func, *args, **kwargs):
-    with open(os.devnull, 'w') as fnull:
-        with contextlib.redirect_stdout(fnull), contextlib.redirect_stderr(fnull):
-            return func(*args, **kwargs)
 
 def undelivered():
     """Returns True with a varying probability between 5% and 15%."""
@@ -116,7 +109,7 @@ class client:
 
     def receive_message(self, sender, token_index, message):
         global COLLISIONS
-
+        local_token_index = None
         try:
             local_token_index = self.pads.index(self.ROOT_PADS[token_index])
             if sender == 'A':
@@ -133,6 +126,7 @@ class client:
             if DEBUG:
                 print(f'[C] \t COLLISION\t SENDER: {sender}\t Receiver: {self.name} \tToken index: {token_index}\
                 \t Token:{self.ROOT_PADS[token_index]} \tMessage: {message}\t Error:', e)
+                print("after recv", self.pads, local_token_index)
 
             COLLISIONS[0 if sender == 'A' else 1 if sender == 'B' else 2] += 1
         # token_used = self.pads.pop(token_index)
@@ -150,12 +144,13 @@ class client:
         self.messages_sent.append({'message': message, 'token_index':token_index})
         if DEBUG:
             print(f'[S]\tSender: {self.name}\t Message: {message}\t Token: {token_used}\t Cipher: {message^token_used}')
+            print("after sending", self.pads, token_index)
         message ^= token_used
         MESSAGE_QUEUE.append({'sender':self.name, 'message': message, 'token_index':token_index})
         return token_used
 
     def send_message(self):
-        assert len(self.pads) > (2*D + D//2*2)#+ self.undelivered_B//2 + (M)), f"{self.name}: Not enough pads left! Available: {len(self.pads)}"
+        assert len(self.pads) > (3*D), f"assert hit by, {self.name}" # + actually (D + (D/2)*2)
         # assert self.can_send()
         if self.name == 'A':
             self._send_message(0)

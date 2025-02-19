@@ -1,7 +1,7 @@
 # Secure 3 Party Communication using One Time Pads
 
 ## Initializing the repository
-1. Install poetry is you haven't already: `brew install poetry` or `apt install poetry`
+1. Install poetry if you haven't already: `brew install poetry` or `apt install poetry`
 2. Install all required dependencies of project: `poetry install` 
 
 ## Running the protocol

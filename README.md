@@ -1,4 +1,9 @@
 # Secure 3 Party Communication using One Time Pads
+
+## Initializing the repository
+1. Install poetry is you haven't already: `brew install poetry` or `apt install poetry`
+2. Install all required dependencies of project: `poetry install` 
+
 ## Running the protocol
 - The protocol implementation is a module that can be imported using:
     `from secure_3_party_comms.protocol import *`
